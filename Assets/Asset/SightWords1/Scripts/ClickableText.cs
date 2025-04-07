@@ -138,7 +138,7 @@ public class ClickableText : MonoBehaviour
         correctanswercount++;
           REF_StoryTime.ReportCorrectanswer(obj.gameObject.name);
         int currentCounterValue = int.Parse(counter.text);
-        if (currentCounterValue < 14)
+        if (currentCounterValue < 15)
         {
             currentCounterValue++;
             counter.text = currentCounterValue.ToString();
