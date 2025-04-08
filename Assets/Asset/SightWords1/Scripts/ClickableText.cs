@@ -20,7 +20,7 @@ public class ClickableText : MonoBehaviour
     private StoryTime REF_StoryTime;
 
     [SerializeField] private GameObject[] GA_Objects;
-    
+
 
     [SerializeField] private GameObject G_ActivityCompleted;
 
@@ -91,7 +91,7 @@ public class ClickableText : MonoBehaviour
         if (lastClickedWord.ToLower().Equals(answer.ToLower()))
         {
             HighlightWord(wordIndex, correctColor);
-           
+
             StopAllCoroutines();
             SetClickable(false);
         }
@@ -99,7 +99,7 @@ public class ClickableText : MonoBehaviour
         {
             REF_StoryTime.THI_WrongAnswer();
             HighlightWord(wordIndex, incorrectColor);
-            
+
             REF_StoryTime.ReportWrongAnswer(lastClickedWord);
             StartCoroutine(RevertColor());
         }
@@ -136,9 +136,9 @@ public class ClickableText : MonoBehaviour
         // Increment correct answer count
         obj.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
         correctanswercount++;
-          REF_StoryTime.ReportCorrectanswer(obj.gameObject.name);
+        REF_StoryTime.ReportCorrectanswer(obj.gameObject.name);
         int currentCounterValue = int.Parse(counter.text);
-        if (currentCounterValue < 15)
+        if (currentCounterValue <= 15)
         {
             currentCounterValue++;
             counter.text = currentCounterValue.ToString();
@@ -148,7 +148,7 @@ public class ClickableText : MonoBehaviour
         Debug.Log("Correct Answer Count: " + correctanswercount);
 
         // Check if the correct answer count is 8
-        if (correctanswercount == 14)
+        if (correctanswercount == 15)
         {
             // Start a coroutine to enable the GameObject after 1 second
             StartCoroutine(EnableActivityCompleted());
@@ -157,6 +157,7 @@ public class ClickableText : MonoBehaviour
         // Your existing logic
         _currentIndex++;
         obj.gameObject.GetComponent<Button>().interactable = false;
+        obj.gameObject.GetComponent<TextMeshProUGUI>().color = Color.white;
 
         Debug.Log("Index Switched");
 
@@ -165,7 +166,7 @@ public class ClickableText : MonoBehaviour
     private IEnumerator EnableActivityCompleted()
     {
         // Wait for 1 second
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         // Enable the GameObject after the delay
         if (G_ActivityCompleted != null)
