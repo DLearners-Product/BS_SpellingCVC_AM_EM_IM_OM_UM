@@ -74,17 +74,19 @@ namespace SightWords2
 
         private GameObject questionObject;
 
-        // #region QA
 
-        // private int qIndex;
-        // public GameObject questionGO;
-        // public GameObject[] optionsGO;
-        // public Dictionary<string, Component> additionalFields;
-        // Component[] questions;
-        // Component[] options;
-        // Component[] answers;
 
-        // #endregion
+        #region QA
+
+        private int qIndex;
+        public GameObject questionGO;
+        public GameObject[] optionsGO;
+        public Dictionary<string, Component> additionalFields;
+        Component question;
+        Component[] options;
+        Component[] answers;
+
+        #endregion
 
 
 
@@ -94,14 +96,14 @@ namespace SightWords2
 
         void Start()
         {
-            // #region DataSetter
-            // //   Main_Blended.OBJ_main_blended.levelno = 11;
-            // QAManager.instance.UpdateActivityQuestion();
-            // qIndex = 0;
-            // GetData(qIndex);
-            // GetAdditionalData();
-            // AssignData();
-            // #endregion
+            #region DataSetter
+            //   Main_Blended.OBJ_main_blended.levelno = 11;
+            QAManager.instance.UpdateActivityQuestion();
+            qIndex = 0;
+            GetData(qIndex);
+            GetAdditionalData();
+            AssignData();
+            #endregion
 
             I_CurrentIndex = 0;
             _ansCount = 0;
@@ -249,24 +251,15 @@ namespace SightWords2
 
         public void ReportCorrectanswer(string obj)
         {
-            questionObject = EventSystem.current.currentSelectedGameObject;
-            Debug.Log(questionObject.name);
-            // ScoreManager.instance.RightAnswer(qIndex, questionID: GetQuestionID(questionObject.name), answer: obj);
-            // qIndex++;
-
-
-            // // Proceed to the next question
-            // if (qIndex < ACA_Words.Length)
-            // {
-
-            //     GetData(qIndex);
-            // }
+            //?scoring integration
+            ScoreManager.instance.RightAnswer(qIndex, questionID: question.id, answer: obj);
+            qIndex++;
         }
 
         public void ReportWrongAnswer(string lastClickedWord)
         {
-           // questionObject = EventSystem.current.currentSelectedGameObject;
-          //  ScoreManager.instance.WrongAnswer(qIndex, questionID: questions[qIndex].id, answer: lastClickedWord);
+            //?scoring integration
+            ScoreManager.instance.WrongAnswer(qIndex, questionID: question.id, answer: lastClickedWord);
         }
 
 
@@ -402,74 +395,66 @@ namespace SightWords2
                 clickableText.SetClickable(true);
             }
         }
-        // #region QA
-
-        // int GetOptionID(string selectedOption)
-        // {
-        //     for (int i = 0; i < options.Length; i++)
-        //     {
-        //         if (options[i].text == selectedOption)
-        //         {
-        //             return options[i].id;
-        //         }
-        //     }
-        //     return -1;
-        // }
-
-        // int GetQuestionID(string selectedQuestion)
-        // {
-        //     for (int i = 0; i < questions.Length; i++)
-        //     {
-        //         if (questions[i].text == selectedQuestion)
-        //         {
-        //             return questions[i].id;
-        //         }
-        //     }
-        //     return -1;
-        // }
 
 
-        // bool CheckOptionIsAns(Component option)
-        // {
-        //     for (int i = 0; i < answers.Length; i++)
-        //     {
-        //         if (option.text == answers[i].text) { return true; }
-        //     }
-        //     return false;
-        // }
+        #region QA
 
-        // void GetData(int questionIndex)
-        // {
-        //     Debug.Log(">>>>>" + questionIndex);
-        //     questions = QAManager.instance.GetAllQuestions(0);
-        //     //if(question != null){
-        //     options = QAManager.instance.GetOption(0, questionIndex);
-        //     answers = QAManager.instance.GetAnswer(0, questionIndex);
-        //     // }
-        // }
+        int GetOptionID(string selectedOption)
+        {
+            for (int i = 0; i < options.Length; i++)
+            {
+                if (options[i].text == selectedOption)
+                {
+                    return options[i].id;
+                }
+            }
+            return -1;
+        }
 
-        // void GetAdditionalData()
-        // {
-        //     additionalFields = QAManager.instance.GetAdditionalField(0);
-        // }
+        bool CheckOptionIsAns(Component option)
+        {
+            for (int i = 0; i < answers.Length; i++)
+            {
+                if (option.text == answers[i].text) { return true; }
+            }
+            return false;
+        }
 
-        // void AssignData()
-        // {
-        //     // Custom code
-        //     for (int i = 0; i < optionsGO.Length; i++)
-        //     {
-        //         optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
-        //         optionsGO[i].tag = "Untagged";
-        //         Debug.Log(optionsGO[i].name, optionsGO[i]);
-        //         if (CheckOptionIsAns(options[i]))
-        //         {
-        //             optionsGO[i].tag = "answer";
-        //         }
-        //     }
-        //     // answerCount.text = "/"+answers.Length;
-        // }
+        void GetData(int questionIndex)
+        {
+            Debug.Log(">>>>>" + questionIndex);
+            question = QAManager.instance.GetQuestionAt(0, questionIndex);
+            //if(question != null){
+            options = QAManager.instance.GetOption(0, questionIndex);
+            answers = QAManager.instance.GetAnswer(0, questionIndex);
+            // }
+        }
 
-        // #endregion
+        void GetAdditionalData()
+        {
+            additionalFields = QAManager.instance.GetAdditionalField(0);
+        }
+
+        void AssignData()
+        {
+            // Custom code
+            for (int i = 0; i < optionsGO.Length; i++)
+            {
+                optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
+                optionsGO[i].tag = "Untagged";
+                Debug.Log(optionsGO[i].name, optionsGO[i]);
+                if (CheckOptionIsAns(options[i]))
+                {
+                    optionsGO[i].tag = "answer";
+                }
+            }
+            // answerCount.text = "/"+answers.Length;
+        }
+
+        #endregion
+
+
+
     }
 
 }

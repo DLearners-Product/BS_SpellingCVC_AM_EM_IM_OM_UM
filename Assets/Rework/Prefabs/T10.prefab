@@ -14047,7 +14047,7 @@ GameObject:
   - component: {fileID: 7728174458837154971}
   - component: {fileID: 7728174458837154970}
   m_Layer: 5
-  m_Name: Object to activate
+  m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19186,7 +19186,7 @@ GameObject:
   - component: {fileID: 7728174458910108198}
   - component: {fileID: 7728174458910108197}
   m_Layer: 5
-  m_Name: Object to activate
+  m_Name: 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48483,7 +48483,7 @@ GameObject:
   - component: {fileID: 7728174459328103752}
   - component: {fileID: 7728174459328103751}
   m_Layer: 5
-  m_Name: Object to activate
+  m_Name: 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53780,6 +53780,8 @@ MonoBehaviour:
   - {fileID: 7728174459328103749}
   - {fileID: 7728174460712377516}
   activityCompleted: {fileID: 7728174459922044377}
+  questionGO: {fileID: 0}
+  optionsGO: []
 --- !u!1 &7728174459615094578
 GameObject:
   m_ObjectHideFlags: 0
@@ -73088,7 +73090,7 @@ GameObject:
   - component: {fileID: 7728174459811464120}
   - component: {fileID: 7728174459811464119}
   m_Layer: 5
-  m_Name: Object to activate
+  m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83401,7 +83403,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 373e0bfaf40d79641a5182e4513d67de, type: 2}
   m_sharedMaterial: {fileID: 8610426517522080127, guid: 373e0bfaf40d79641a5182e4513d67de,
@@ -137568,7 +137570,7 @@ GameObject:
   - component: {fileID: 7728174460712377519}
   - component: {fileID: 7728174460712377518}
   m_Layer: 5
-  m_Name: Object to activate
+  m_Name: 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147050,7 +147052,7 @@ GameObject:
   - component: {fileID: 7728174460797610917}
   - component: {fileID: 7728174460797610916}
   m_Layer: 5
-  m_Name: Object to activate
+  m_Name: 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

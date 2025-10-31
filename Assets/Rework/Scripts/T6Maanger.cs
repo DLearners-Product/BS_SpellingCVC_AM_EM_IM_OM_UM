@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using System.Text;
+
+
 
 public class T6Maanger : MonoBehaviour
 {
@@ -23,14 +26,6 @@ public class T6Maanger : MonoBehaviour
     [SerializeField] private GameObject G_ActivityCompleted;
     public static T6Maanger instance;
 
-    //int q1Index;
-
-
-    [Space(10)]
-    [Header("PARTICLES---------------------------------------------------------")]
-    // [SerializeField] public ParticleSystem PS_Drag;
-    // [SerializeField] private ParticleSystem PS_CorrectAnswer;
-
 
 
     //!end of region - unity reference variables
@@ -47,37 +42,62 @@ public class T6Maanger : MonoBehaviour
     private int correctDropCount = 0; // Track correct drops per question
     private const int totalDropsPerQuestion = 3; // Each question has 3 objects
 
+    private StringBuilder _sb;
+
     //!end of region - local variables
     //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     #endregion
 
 
 
+    #region QA
+
+    private int qIndex;
+    public GameObject questionGO;
+    public GameObject[] optionsGO;
+    public Dictionary<string, Component> additionalFields;
+    Component question;
+    Component[] options;
+    Component[] answers;
+
+    #endregion
+
+
 
     #region gameplay logic
     //==================================================================================================
-
-    // private void Start() => TXT_Total.text = GA_Objects.Length.ToString();
-    // #region QA
-    // private int qIndex;
-    // public GameObject questionGO;
-    // public GameObject[] optionsGO;
-    // public bool isActivityCompleted = false;
-    // public Dictionary<string, Component> additionalFields;
-    // Component question;
-    // Component[] options;
-    // Component[] answers;
-    // #endregion
-
 
     void Start()
     {
         if (instance == null)
             instance = this;
 
-        Debug.Log("In Start", gameObject);
+
         _currentIndex = 0;
         TXT_Total.text = GA_DragObjects.Length.ToString();
+        _sb = new StringBuilder();
+        ResetStringBuilder();
+
+
+        #region DataSetter
+        //Main_Blended.OBJ_main_blended.levelno = 3;
+        QAManager.instance.UpdateActivityQuestion();
+        qIndex = 0;
+        GetData(qIndex);
+        GetAdditionalData();
+        AssignData();
+        #endregion
+
+    }
+
+
+    private void ResetStringBuilder()
+    {
+        _sb.Clear();
+
+        _sb.Append("_");
+        _sb.Append("_");
+        _sb.Append("_");
     }
 
 
@@ -87,24 +107,35 @@ public class T6Maanger : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        correctDropCount++; // Increment correct answer count
+        correctDropCount++;
 
         if (correctDropCount >= totalDropsPerQuestion)
         {
-            Invoke(nameof(SwitchToNextQuestion), 0.5f); // Delay before switching to next question
+            //?scoring integration
+            ScoreManager.instance.RightAnswer(qIndex, questionID: question.id, answer: _sb.ToString());
+
+            if (qIndex < GA_DragObjects.Length - 1)
+                qIndex++;
+
+            GetData(qIndex);
+
+            Invoke(nameof(SwitchToNextQuestion), 0.5f);
         }
 
         yield return null;
     }
+
 
     private void UpdateCounter()
     {
         TXT_Current.text = (_currentIndex + 1).ToString();
         G_TransparentScreen.SetActive(false);
     }
+
+
     private void SwitchToNextQuestion()
     {
-        correctDropCount = 0; // Reset the correct answer counter
+        correctDropCount = 0;
         _currentIndex++;
 
         if (_currentIndex >= GA_DragObjects.Length)
@@ -113,126 +144,105 @@ public class T6Maanger : MonoBehaviour
         }
         else
         {
-            GA_DragObjects[_currentIndex-1].SetActive(false);
+            GA_DragObjects[_currentIndex - 1].SetActive(false);
             GA_DragObjects[_currentIndex].SetActive(true);
             UpdateCounter();
         }
+
+        ResetStringBuilder();
     }
 
 
-    public void CorrectAnswer(string answer, Vector3 pos)
+    public void CorrectAnswer(string answer, Vector3 pos, int index)
     {
         StartCoroutine(IENUM_CorrectAnswer(answer, pos));
 
+        _sb.Remove(index, 1);
+        _sb.Insert(index, answer);
 
-    }
-
-    public void ReportCorrectAnswer(string selectedObject)
-    {
-        // ScoreManager.instance.RightAnswer(q1Index, questionID: question.id, answerID: GetOptionID(selectedObject));
-        // q1Index++;
-        // if (qIndex < GA_DragObjects.Length - 1)
-        // {
-        //     qIndex++;
-        //     GetData(qIndex);
-        // }
-
-
-
-
-    }
-
-    public void ReportWrongAnswer(string selectedObject)
-    {
-        //  ScoreManager.instance.WrongAnswer(q1Index, questionID: question.id, answerID: GetOptionID(selectedObject));
+        Debug.Log(_sb.ToString());
     }
 
 
-    private void PlayParticles(Vector3 pos)
+    public void WrongAnswer(string answer, int index)
     {
-        // PS_CorrectAnswer.transform.position = pos;
-        // PS_CorrectAnswer.Play();
-    }
+        _sb.Remove(index, 1);
+        _sb.Insert(index, answer);
 
+        Debug.Log(_sb.ToString());
 
-    public void WrongAnswer(string answer)
-    {
-
-    }
-
-
-    public void SetDragParticlesPosition(Transform parent)
-    {
-        // PS_Drag.transform.SetParent(parent);
-        // PS_Drag.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        //?scoring integration
+        ScoreManager.instance.WrongAnswer(qIndex, questionID: question.id, answer: _sb.ToString());
     }
 
 
     private void ShowActivityCompleted()
     {
+        BlendedOperations.instance.NotifyActivityCompleted();
         G_ActivityCompleted.SetActive(true);
-        //  BlendedOperations.instance.NotifyActivityCompleted();
     }
-
 
 
     //!end of region - gameplay logic
     //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     #endregion
 
-    // #region QA
 
-    // int GetOptionID(string selectedOption)
-    // {
-    //     for (int i = 0; i < options.Length; i++)
-    //     {
-    //         if (options[i].text == selectedOption)
-    //         {
-    //             Debug.Log(selectedOption);
-    //             return options[i].id;
-    //         }
-    //     }
-    //     return -1;
-    // }
 
-    // bool CheckOptionIsAns(Component option)
-    // {
-    //     for (int i = 0; i < answers.Length; i++)
-    //     {
-    //         if (option.text == answers[i].text) { return true; }
-    //     }
-    //     return false;
-    // }
+    #region QA
 
-    // void GetData(int questionIndex)
-    // {
-    //     question = QAManager.instance.GetQuestionAt(0, questionIndex);
-    //     // if(question != null){
-    //     options = QAManager.instance.GetOption(0, questionIndex);
-    //     answers = QAManager.instance.GetAnswer(0, questionIndex);
-    //     // }
-    // }
+    int GetOptionID(string selectedOption)
+    {
+        for (int i = 0; i < options.Length; i++)
+        {
+            if (options[i].text == selectedOption)
+            {
+                Debug.Log(selectedOption);
+                return options[i].id;
+            }
+        }
+        return -1;
+    }
 
-    // void GetAdditionalData()
-    // {
-    //     additionalFields = QAManager.instance.GetAdditionalField(0);
-    // }
+    bool CheckOptionIsAns(Component option)
+    {
+        for (int i = 0; i < answers.Length; i++)
+        {
+            if (option.text == answers[i].text) { return true; }
+        }
+        return false;
+    }
 
-    // void AssignData()
-    // {
-    //     // Custom code
-    //     for (int i = 0; i < optionsGO.Length; i++)
-    //     {
-    //         optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
-    //         optionsGO[i].tag = "Untagged";
-    //         Debug.Log(optionsGO[i].name, optionsGO[i]);
-    //         if (CheckOptionIsAns(options[i]))
-    //         {
-    //             optionsGO[i].tag = "answer";
-    //         }
-    //     }
-    //     // answerCount.text = "/"+answers.Length;
-    // }
+    void GetData(int questionIndex)
+    {
+        question = QAManager.instance.GetQuestionAt(0, questionIndex);
+        // if(question != null){
+        options = QAManager.instance.GetOption(0, questionIndex);
+        answers = QAManager.instance.GetAnswer(0, questionIndex);
+        // }
+    }
 
-    // #endregion
+    void GetAdditionalData()
+    {
+        additionalFields = QAManager.instance.GetAdditionalField(0);
+    }
+
+    void AssignData()
+    {
+        // Custom code
+        for (int i = 0; i < optionsGO.Length; i++)
+        {
+            optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
+            optionsGO[i].tag = "Untagged";
+            Debug.Log(optionsGO[i].name, optionsGO[i]);
+            if (CheckOptionIsAns(options[i]))
+            {
+                optionsGO[i].tag = "answer";
+            }
+        }
+
+    }
+
+    #endregion
+
 }

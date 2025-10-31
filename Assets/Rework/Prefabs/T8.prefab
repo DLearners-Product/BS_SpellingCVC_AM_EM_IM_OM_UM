@@ -83296,6 +83296,8 @@ MonoBehaviour:
   source: {fileID: 642821354404639837}
   correctAnswer: {fileID: 8300000, guid: 3bb404ef9903ad64588a67045638e745, type: 3}
   wrongAnswer: {fileID: 8300000, guid: ddc0fe2d45c8ccd4b8ce29f5d69beec0, type: 3}
+  questionGO: {fileID: 0}
+  optionsGO: []
 --- !u!1 &642821354633371859
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,21 +39,7 @@ public class ClickableText : MonoBehaviour
         originalText = text.text; // Save the original text
         REF_StoryTime = FindObjectOfType<StoryTime>();
         REF_StoryTime.RegisterClickableText(this);
-        //  ShowQuestion();
     }
-
-    // private void ShowQuestion()
-    // {
-
-
-    //     if (_currentIndex == GA_Objects.Length)
-    //     {
-    //         //showing activity completed 
-    //         Invoke(nameof(ShowActivityCompleted), 1f);
-    //     }
-
-
-    // }
 
 
     void OnDestroy()
@@ -106,8 +92,6 @@ public class ClickableText : MonoBehaviour
     }
 
 
-
-
     private void HighlightWord(int wordIndex, Color color)
     {
         TMP_WordInfo wordInfo = text.textInfo.wordInfo[wordIndex];
@@ -124,16 +108,9 @@ public class ClickableText : MonoBehaviour
         text.text = preText + colorTag + postText;
     }
 
+
     public void THI_CorrectAnswer(Transform obj)
     {
-        // ScoreManager.instance.RightAnswer(qIndex, questionID: question.id, answerID: GetOptionID(obj.transform.GetChild(1).name));
-
-        // if (qIndex < GA_Objects.Length - 1)
-        //     qIndex++;
-
-        // GetData(qIndex);
-        // Increment correct answer count
-        // Increment correct answer count
         obj.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
         correctanswercount++;
         REF_StoryTime.ReportCorrectanswer(obj.gameObject.name);
@@ -144,25 +121,17 @@ public class ClickableText : MonoBehaviour
             counter.text = currentCounterValue.ToString();
         }
 
-        // Log the correct answer count
-        Debug.Log("Correct Answer Count: " + correctanswercount);
-
-        // Check if the correct answer count is 8
         if (correctanswercount == 15)
         {
-            // Start a coroutine to enable the GameObject after 1 second
             StartCoroutine(EnableActivityCompleted());
         }
 
-        // Your existing logic
         _currentIndex++;
         obj.gameObject.GetComponent<Button>().interactable = false;
         obj.gameObject.GetComponent<TextMeshProUGUI>().color = Color.white;
-
-        Debug.Log("Index Switched");
-
-
     }
+
+
     private IEnumerator EnableActivityCompleted()
     {
         // Wait for 1 second
@@ -190,11 +159,4 @@ public class ClickableText : MonoBehaviour
         text.text = originalText;
     }
 
-    // private void ShowActivityCompleted()
-    // {
-    //     G_ActivityCompleted.SetActive(true);
-    //     // BlendedOperations.instance.NotifyActivityCompleted();
-
-
-    // }
 }

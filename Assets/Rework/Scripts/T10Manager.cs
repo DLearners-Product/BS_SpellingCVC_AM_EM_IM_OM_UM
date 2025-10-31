@@ -61,16 +61,20 @@ public class T10Manager : MonoBehaviour
 
     public GameObject activityCompleted;
 
-//    #region QA
-//     private int qIndex;
-//     public GameObject questionGO;
-//     public GameObject[] optionsGO;
-//     public bool isActivityCompleted = false;
-//     public Dictionary<string, Component> additionalFields;
-//     Component[] questions;
-//     Component[] options;
-//     Component[] answers;
-//     #endregion
+
+
+    #region QA
+
+    private int qIndex;
+    public GameObject questionGO;
+    public GameObject[] optionsGO;
+    public Dictionary<string, Component> additionalFields;
+    Component question;
+    Component[] options;
+    Component[] answers;
+
+    #endregion
+
 
 
     void Start()
@@ -78,147 +82,102 @@ public class T10Manager : MonoBehaviour
         if (instance == null)
             instance = this;
         _currentIndex = 0;
-        // #region DataSetter
-        // Main_Blended.OBJ_main_blended.levelno = 4;
-        // QAManager.instance.UpdateActivityQuestion();
-        // qIndex = 0;
-        // GetData(qIndex);
-        // GetAdditionalData();
-        // AssignData();
-        // #endregion
-        //  TXT_Total.text = GA_DragObjects.Length.ToString();
+
+        #region DataSetter
+        //Main_Blended.OBJ_main_blended.levelno = 3;
+        QAManager.instance.UpdateActivityQuestion();
+        qIndex = 0;
+        GetData(qIndex);
+        GetAdditionalData();
+        AssignData();
+        #endregion
+
     }
 
-    void Update()
-    {
-        // Check if all objects are active
-        bool allActive = true;
+    // void Update()
+    // {
+    //     // Check if all objects are active
+    //     bool allActive = true;
 
-        foreach (GameObject obj in objs)
-        {
-            if (!obj.activeSelf) // If any object is not active, set allActive to false
-            {
-                allActive = false;
-                break; // No need to check further
-            }
-        }
+    //     foreach (GameObject obj in objs)
+    //     {
+    //         if (!obj.activeSelf) // If any object is not active, set allActive to false
+    //         {
+    //             allActive = false;
+    //             break; // No need to check further
+    //         }
+    //     }
 
-        // If all objects are active, print "Game Over" and disable this script
-        if (allActive)
-        {
-            Debug.Log("Game Over");
-            enabled = false; // Disable this script to prevent repetitive logging
-           //  BlendedOperations.instance.NotifyActivityCompleted();
-            activityCompleted.SetActive(true);
-        }
-    }
+    //     // If all objects are active, print "Game Over" and disable this script
+    //     if (allActive)
+    //     {
+    //         Debug.Log("Game Over");
+    //         enabled = false; // Disable this script to prevent repetitive logging
+    //                          //  BlendedOperations.instance.NotifyActivityCompleted();
+    //         activityCompleted.SetActive(true);
+    //     }
+    // }
 
 
-    private IEnumerator IENUM_CorrectAnswer(string answer, Vector3 pos)
+    private IEnumerator IENUM_CorrectAnswer()
     {
         //*correct answer
-        //TODO: additional functionality for correct answer
 
 
-
-
-
-        //--------------------------------------------
-
-        // PlayParticles(pos);
         yield return new WaitForSeconds(4.5f);
         _currentIndex++;
-        // if (_currentIndex > 0)
-        // {
-        //     GA_DragObjects[_currentIndex - 1].SetActive(false);
-        // }
 
-
-        if (_currentIndex == GA_DragObjects.Length)
+        if (_currentIndex == objs.Length)
         {
             Invoke(nameof(ShowActivityCompleted), 2f);
         }
         else
         {
-            //enabling current question
-            //    GA_DragObjects[_currentIndex].SetActive(true);
             UpdateCounter();
-
         }
 
         yield return null;
     }
 
-  public void ReportCorrectAnswer(string selectedObject, string questionObjectName, int questionIndex)
+    public void ReportCorrectAnswer(int index, string ans)
     {
-        Debug.Log(questionObjectName);
-        // ScoreManager.instance.RightAnswer(q1Index, questionID: GetQuestionID(questionObjectName), answerID: GetOptionID(selectedObject));
-        // q1Index++;
-        // if (qIndex < GA_DragObjects.Length - 1)
-        // {
-        //   //  qIndex++;
-        //     GetData(questionIndex);
-        // }
+        //?scoring integration
+        GetData(index);
 
+        ScoreManager.instance.RightAnswer(qIndex, questionID: question.id, answerID: GetOptionID(ans));
 
-
-
+        if (qIndex < objs.Length - 1)
+        {
+            qIndex++;
+        }
     }
-    public void ReportWrongAnswer(string selectedObject,string questionObjectName,int questionIndex)
-    {
-        Debug.Log(questionObjectName);
-        // ScoreManager.instance.WrongAnswer(q1Index, questionID: GetQuestionID(questionObjectName), answerID: GetOptionID(selectedObject));
-        //   if (qIndex < GA_DragObjects.Length - 1)
-        // {
-        //   //  qIndex++;
-        //     GetData(questionIndex);
-        // }
 
+
+    public void ReportWrongAnswer(int index, string ans)
+    {
+        //?scoring integration
+        GetData(index);
+
+        ScoreManager.instance.WrongAnswer(qIndex, questionID: question.id, answerID: GetOptionID(ans));
     }
 
 
     private void UpdateCounter()
     {
-
         TXT_Current.text = (_currentIndex + 1).ToString();
-
-        //animation
-        // Utilities.Instance.ANIM_ClickEffect(TXT_Current.transform.parent);
-
-        //enabling user interaction
-        // G_TransparentScreen.SetActive(false);
     }
 
 
-    public void CorrectAnswer(string answer, Vector3 pos)
+    public void CorrectAnswer()
     {
-        StartCoroutine(IENUM_CorrectAnswer(answer, pos));
-    }
-
-
-    private void PlayParticles(Vector3 pos)
-    {
-        // PS_CorrectAnswer.transform.position = pos;
-        // PS_CorrectAnswer.Play();
-    }
-
-
-    public void WrongAnswer(string answer)
-    {
-
-    }
-
-
-    public void SetDragParticlesPosition(Transform parent)
-    {
-        // PS_Drag.transform.SetParent(parent);
-        // PS_Drag.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        StartCoroutine(IENUM_CorrectAnswer());
     }
 
 
     private void ShowActivityCompleted()
     {
-        // G_ActivityCompleted.SetActive(true);
+        BlendedOperations.instance.NotifyActivityCompleted();
+        activityCompleted.SetActive(true);
     }
 
 
@@ -227,71 +186,62 @@ public class T10Manager : MonoBehaviour
     //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     #endregion
 
-    // #region QA
 
-    // int GetOptionID(string selectedOption)
-    // {
-    //     for (int i = 0; i < options.Length; i++)
-    //     {
-    //         if (options[i].text == selectedOption)
-    //         {
-    //             Debug.Log(selectedOption);
-    //             return options[i].id;
-    //         }
-    //     }
-    //     return -1;
-    // }
-    //    int GetQuestionID(string selectedQuestion)
-    // {
-    //     for (int i = 0; i < questions.Length; i++)
-    //     {
-    //         if (questions[i].text == selectedQuestion)
-    //         {
-    //             Debug.Log(selectedQuestion);
-    //             return questions[i].id;
-    //         }
-    //     }
-    //     return -1;
-    // }
 
-    // bool CheckOptionIsAns(Component option)
-    // {
-    //     for (int i = 0; i < answers.Length; i++)
-    //     {
-    //         if (option.text == answers[i].text) { return true; }
-    //     }
-    //     return false;
-    // }
+    #region QA
 
-    // void GetData(int questionIndex)
-    // {
-    //     questions = QAManager.instance.GetAllQuestions(0);
-    //     // if(question != null){
-    //     options = QAManager.instance.GetOption(0, questionIndex);
-    //     answers = QAManager.instance.GetAnswer(0, questionIndex);
-    //     // }
-    // }
+    int GetOptionID(string selectedOption)
+    {
+        for (int i = 0; i < options.Length; i++)
+        {
+            if (options[i].text == selectedOption)
+            {
+                return options[i].id;
+            }
+        }
+        return -1;
+    }
 
-    // void GetAdditionalData()
-    // {
-    //     additionalFields = QAManager.instance.GetAdditionalField(0);
-    // }
+    bool CheckOptionIsAns(Component option)
+    {
+        for (int i = 0; i < answers.Length; i++)
+        {
+            if (option.text == answers[i].text) { return true; }
+        }
+        return false;
+    }
 
-    // void AssignData()
-    // {
-    //     // Custom code
-    //     for (int i = 0; i < optionsGO.Length; i++)
-    //     {
-    //         optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
-    //         optionsGO[i].tag = "Untagged";
-    //         Debug.Log(optionsGO[i].name, optionsGO[i]);
-    //         if (CheckOptionIsAns(options[i]))
-    //         {
-    //             optionsGO[i].tag = "answer";
-    //         }
-    //     }
-    //     // answerCount.text = "/"+answers.Length;
-    // }
+    void GetData(int questionIndex)
+    {
+        Debug.Log(">>>>>" + questionIndex);
+        question = QAManager.instance.GetQuestionAt(0, questionIndex);
+        //if(question != null){
+        options = QAManager.instance.GetOption(0, questionIndex);
+        answers = QAManager.instance.GetAnswer(0, questionIndex);
+        // }
+    }
 
-    // #endregion
+    void GetAdditionalData()
+    {
+        additionalFields = QAManager.instance.GetAdditionalField(0);
+    }
+
+    void AssignData()
+    {
+        // Custom code
+        for (int i = 0; i < optionsGO.Length; i++)
+        {
+            optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
+            optionsGO[i].tag = "Untagged";
+            Debug.Log(optionsGO[i].name, optionsGO[i]);
+            if (CheckOptionIsAns(options[i]))
+            {
+                optionsGO[i].tag = "answer";
+            }
+        }
+        // answerCount.text = "/"+answers.Length;
+    }
+
+    #endregion
+
 }

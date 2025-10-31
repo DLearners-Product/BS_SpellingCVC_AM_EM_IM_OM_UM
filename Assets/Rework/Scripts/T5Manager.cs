@@ -77,37 +77,34 @@ public class T5Manager : MonoBehaviour
     #region gameplay logic
     //==================================================================================================
 
-    // #region QA
+    #region QA
 
-    // private int qIndex;
-    // public GameObject questionGO;
-    // public GameObject[] optionsGO;
-    // public Dictionary<string, Component> additionalFields;
-    // Component question;
-    // Component[] options;
-    // Component[] answers;
+    private int qIndex;
+    public GameObject questionGO;
+    public GameObject[] optionsGO;
+    public Dictionary<string, Component> additionalFields;
+    Component question;
+    Component[] options;
+    Component[] answers;
 
-    // #endregion
+    #endregion
 
 
     void Start()
     {
-        Debug.Log($"Level No >> {Main_Blended.OBJ_main_blended.levelno}");
-    //   #region DataSetter
-    //    // Main_Blended.OBJ_main_blended.levelno = 5;
-    //     QAManager.instance.UpdateActivityQuestion();
-    //     qIndex = 0;
-    //     GetData(qIndex);
-    //     GetAdditionalData();
-    //     AssignData();
-    //     #endregion
         _currentIndex = -1;
         TXT_Total.text = GA_Objects.Length.ToString();
 
-        // for (int i = 0; i < GA_Objects.Length; i++)
-        // {
-        //     GA_Objects[i].transform.GetChild(3).transform.localScale = Vector3.zero;
-        // }
+
+        #region DataSetter
+        //Main_Blended.OBJ_main_blended.levelno = 3;
+        QAManager.instance.UpdateActivityQuestion();
+        qIndex = 0;
+        GetData(qIndex);
+        GetAdditionalData();
+        AssignData();
+        #endregion
+
 
         ShowQuestion();
     }
@@ -116,9 +113,6 @@ public class T5Manager : MonoBehaviour
     private void ShowQuestion()
     {
         _currentIndex++;
-        // G_Transistion.SetActive(false);
-
-
 
         //disabling previous question
         if (_currentIndex > 0)
@@ -156,9 +150,6 @@ public class T5Manager : MonoBehaviour
         textComponent.SetVerticesDirty(); // Force UI update
         Debug.Log("Set color to green: " + textComponent.color);
 
-
-
-
         //--------------------------------------------
 
         //disabling user interation
@@ -168,24 +159,7 @@ public class T5Manager : MonoBehaviour
         textComponent.color = originalColor;
 
 
-
-
-
-        //update correct answer as selected answer
-        //  GA_Objects[_currentIndex].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = _selectedAnswer;
-
-
-
-
-
         yield return new WaitForSeconds(1);
-
-
-        //  Utilities.Instance.ANIM_Appear(GA_Objects[_currentIndex].transform.GetChild(3));
-
-
-
-
 
 
         //wait until questionSwitchDelay and switch to next question
@@ -193,23 +167,12 @@ public class T5Manager : MonoBehaviour
 
         ShowQuestion();
 
-
-
-
-
-
     }
 
 
     private IEnumerator IENUM_WrongAnswer(Transform obj)
     {
         //!wrong answer
-        //TODO: additional functionality for wrong answer
-
-
-
-        // obj.GetComponent<Animator>().SetTrigger("BuzzerPress");
-
         Text textComponent = obj.GetChild(1).GetComponent<Text>();
         Color originalColor = textComponent.color;
 
@@ -239,7 +202,7 @@ public class T5Manager : MonoBehaviour
     private void ShowActivityCompleted()
     {
         G_ActivityCompleted.SetActive(true);
-      //  BlendedOperations.instance.NotifyActivityCompleted();
+        BlendedOperations.instance.NotifyActivityCompleted();
         G_TransparentScreen.SetActive(false);
 
     }
@@ -260,15 +223,16 @@ public class T5Manager : MonoBehaviour
 
     public void THI_CorrectAnswer(Transform obj)
     {
-        // ScoreManager.instance.RightAnswer(qIndex, questionID: question.id, answerID: GetOptionID(obj.transform.GetChild(1).name));
+        //?scoring integration
+        ScoreManager.instance.RightAnswer(qIndex, questionID: question.id, answer: obj.name + obj.GetComponentInChildren<Text>().text);
 
-        // if (qIndex < GA_Objects.Length - 1)
-        //     qIndex++;
+        if (qIndex < GA_Objects.Length - 1)
+            qIndex++;
 
-        // GetData(qIndex);
+        GetData(qIndex);
+
         source.clip = correctAnswer;
         source.Play();
-        // _selectedAnswer = obj.GetChild(1).GetComponent<Text>().text;
         obj.transform.GetChild(2).GetComponent<ParticleSystem>().Play();
 
         StartCoroutine(IENUM_CorrectAnswer(obj));
@@ -279,97 +243,77 @@ public class T5Manager : MonoBehaviour
 
     public void THI_WrongAnswer(Transform obj)
     {
-     //   ScoreManager.instance.WrongAnswer(qIndex, questionID: question.id, answerID: GetOptionID(obj.transform.GetChild(1).name));
+        //?scoring integration
+        ScoreManager.instance.WrongAnswer(qIndex, questionID: question.id, answer: obj.name + obj.GetComponentInChildren<Text>().text);
+
         source.clip = wrongAnswer;
         source.Play();
         StartCoroutine(IENUM_WrongAnswer(obj));
-
-        // obj.GetComponent<Animator>().SetTrigger("BuzzerPress");
     }
-    // public IEnumerator IENUM_Flash()
-    // {
-    //     yield return new WaitForSeconds(0.2f);
-    //     G_FlashImage.SetActive(true);
-    //     StartCoroutine(IENUM_SmallDelay());
-    //     yield return new WaitForSeconds(1.1f);
-    //     G_FlashImage.SetActive(false);
-
-    // }
-
-    public IEnumerator IENUM_SmallDelay()
-    {
-        yield return new WaitForSeconds(0.3f);
-        // G_Camera_Turnoff.SetActive(false);
 
 
-
-    }
     public IEnumerator IENUM_DummyDelay()
     {
         yield return new WaitForSeconds(2f);
-
-
-
-
     }
 
     //!end of region - gameplay logic
     //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     #endregion
 
-    // #region QA
+    #region QA
 
-    // int GetOptionID(string selectedOption)
-    // {
-    //     for (int i = 0; i < options.Length; i++)
-    //     {
-    //         if (options[i].text == selectedOption)
-    //         {
-    //             return options[i].id;
-    //         }
-    //     }
-    //     return -1;
-    // }
+    int GetOptionID(string selectedOption)
+    {
+        for (int i = 0; i < options.Length; i++)
+        {
+            if (options[i].text == selectedOption)
+            {
+                return options[i].id;
+            }
+        }
+        return -1;
+    }
 
-    // bool CheckOptionIsAns(Component option)
-    // {
-    //     for (int i = 0; i < answers.Length; i++)
-    //     {
-    //         if (option.text == answers[i].text) { return true; }
-    //     }
-    //     return false;
-    // }
+    bool CheckOptionIsAns(Component option)
+    {
+        for (int i = 0; i < answers.Length; i++)
+        {
+            if (option.text == answers[i].text) { return true; }
+        }
+        return false;
+    }
 
-    // void GetData(int questionIndex)
-    // {
-    //     Debug.Log(">>>>>" + questionIndex);
-    //     question = QAManager.instance.GetQuestionAt(0, questionIndex);
-    //     //if(question != null){
-    //     options = QAManager.instance.GetOption(0, questionIndex);
-    //     answers = QAManager.instance.GetAnswer(0, questionIndex);
-    //     // }
-    // }
+    void GetData(int questionIndex)
+    {
+        Debug.Log(">>>>>" + questionIndex);
+        question = QAManager.instance.GetQuestionAt(0, questionIndex);
+        //if(question != null){
+        options = QAManager.instance.GetOption(0, questionIndex);
+        answers = QAManager.instance.GetAnswer(0, questionIndex);
+        // }
+    }
 
-    // void GetAdditionalData()
-    // {
-    //     additionalFields = QAManager.instance.GetAdditionalField(0);
-    // }
+    void GetAdditionalData()
+    {
+        additionalFields = QAManager.instance.GetAdditionalField(0);
+    }
 
-    // void AssignData()
-    // {
-    //     // Custom code
-    //     for (int i = 0; i < optionsGO.Length; i++)
-    //     {
-    //         optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
-    //         optionsGO[i].tag = "Untagged";
-    //         Debug.Log(optionsGO[i].name, optionsGO[i]);
-    //         if (CheckOptionIsAns(options[i]))
-    //         {
-    //             optionsGO[i].tag = "answer";
-    //         }
-    //     }
-    //     // answerCount.text = "/"+answers.Length;
-    // }
+    void AssignData()
+    {
+        // Custom code
+        for (int i = 0; i < optionsGO.Length; i++)
+        {
+            optionsGO[i].GetComponent<Image>().sprite = options[i]._sprite;
+            optionsGO[i].tag = "Untagged";
+            Debug.Log(optionsGO[i].name, optionsGO[i]);
+            if (CheckOptionIsAns(options[i]))
+            {
+                optionsGO[i].tag = "answer";
+            }
+        }
+        // answerCount.text = "/"+answers.Length;
+    }
 
-    // #endregion
+    #endregion
 }

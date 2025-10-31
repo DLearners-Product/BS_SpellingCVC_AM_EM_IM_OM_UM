@@ -8573,6 +8573,8 @@ MonoBehaviour:
   answerss: []
   parent: {fileID: 0}
   wordPrefab: {fileID: 0}
+  questionGO: {fileID: 0}
+  optionsGO: []
 --- !u!1 &30173302664472394
 GameObject:
   m_ObjectHideFlags: 0

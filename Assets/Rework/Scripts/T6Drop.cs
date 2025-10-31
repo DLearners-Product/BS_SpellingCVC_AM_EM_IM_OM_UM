@@ -4,6 +4,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 using TMPro;
+
+
+
 public class T6Drop : MonoBehaviour, IDropHandler
 {
     private T6Maanger REF_DragnDrop_V1;
@@ -18,15 +21,6 @@ public class T6Drop : MonoBehaviour, IDropHandler
     private Image objectImage;  // Cache the Image component
     private Color originalColor;
 
-    // public GameObject text;
-
-    // public GameObject[] OneObj;
-
-
-    //  public Text counter;
-
-    // private int oneObjIndex = 0; // Track the current index for OneObj array
-    // private int twoObjIndex = 0; // Track the current index for TwoObj array
 
 
     void Start()
@@ -44,19 +38,19 @@ public class T6Drop : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {
         T6Drag drag = eventData.pointerDrag.GetComponent<T6Drag>();
+        int index = int.Parse(gameObject.name) - 1;
 
         if (drag == null) return;
 
         // Correct Answer
-        if (drag.name == gameObject.name)
+        if (drag.name == transform.GetChild(0).name)
         {
             drag.isDropped = true;
             StartCoroutine(IENUM_LerpTransform(drag.rectTransform, drag.rectTransform.anchoredPosition, GetComponent<RectTransform>().anchoredPosition));
 
-            REF_DragnDrop_V1.CorrectAnswer(drag.name, transform.position);
-            Debug.Log("Correct Answer");
+            REF_DragnDrop_V1.CorrectAnswer(drag.name, transform.position, index);
+
             this.enabled = false;
-            
 
             if (objectImage != null)
             {
@@ -74,8 +68,7 @@ public class T6Drop : MonoBehaviour, IDropHandler
         // Wrong Answer
         else
         {
-            REF_DragnDrop_V1.WrongAnswer(drag.name);
-            Debug.Log("Wrong Answer");
+            REF_DragnDrop_V1.WrongAnswer(drag.name, index);
 
             if (objectImage != null)
             {

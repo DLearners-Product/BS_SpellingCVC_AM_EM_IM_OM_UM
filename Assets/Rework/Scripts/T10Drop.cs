@@ -4,12 +4,12 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 using TMPro;
-public class T10Drop :  MonoBehaviour, IDropHandler
+public class T10Drop : MonoBehaviour, IDropHandler
 {
     private T10Manager REF_DragnDrop_V1;
     private Vector3 initialPosition, currentPosition;
     private float elapsedTime, desiredDuration = 0.2f;
-   
+
     public AudioSource source;
     public AudioClip correctAnswer;
 
@@ -44,28 +44,19 @@ public class T10Drop :  MonoBehaviour, IDropHandler
             drag.isDropped = true;
             StartCoroutine(IENUM_LerpTransform(drag.rectTransform, drag.rectTransform.anchoredPosition, GetComponent<RectTransform>().anchoredPosition));
 
-            REF_DragnDrop_V1.CorrectAnswer(drag.name, transform.position);
-            Debug.Log("correctAnswer");
-          //  T10Manager.instance.ReportCorrectAnswer(drag.name);
+            REF_DragnDrop_V1.CorrectAnswer();
+            REF_DragnDrop_V1.ReportCorrectAnswer(int.Parse(transform.GetChild(0).name), drag.name);
 
             source.clip = correctAnswer;
             source.Play();
-
-
-
-
         }
         //!wrong answer
         else
         {
-            REF_DragnDrop_V1.WrongAnswer(drag.name);
-         //   T10Manager.instance.ReportWrongAnswer(drag.name);
+            REF_DragnDrop_V1.ReportWrongAnswer(int.Parse(transform.GetChild(0).name), drag.name);
 
             source.clip = wrongAnswer;
             source.Play();
-            
-
-           //  StartCoroutine(WrongAnswerColor());
         }
 
     }
@@ -89,7 +80,7 @@ public class T10Drop :  MonoBehaviour, IDropHandler
         this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
         this.gameObject.transform.GetChild(1).GetComponent<ParticleSystem>().Play();
         yield return new WaitForSeconds(1f);
-      
+
         // obj.transform.localPosition = Vector2.zero;
 
         //resetting elapsed time back to zero
