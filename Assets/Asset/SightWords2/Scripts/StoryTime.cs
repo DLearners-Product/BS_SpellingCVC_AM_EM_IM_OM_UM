@@ -329,8 +329,8 @@ namespace SightWords2
             AudioManager.OnAudioSettingsOpen -= DisableAllClickableTexts;
             AudioManager.OnAudioSettingsClose -= EnableAllClickableTexts;
 
+            BlendedOperations.instance.NotifyActivityCompleted();
             G_ActivityCompleted.SetActive(true);
-
         }
 
         public void BUT_InfoShow()
